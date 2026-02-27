@@ -7,27 +7,17 @@ import { randomUUID } from 'crypto';
 export async function getApps(): Promise<App[]> {
   try {
     const rs = await turso.execute("SELECT * FROM apps ORDER BY name COLLATE NOCASE");
-    return rs.rows as App[];
+    // The `rows` from turso are not plain objects, so we need to convert them
+    // to avoid errors when passing them to client components.
+    return rs.rows.map(row => ({
+      id: row.id as string,
+      name: row.name as string,
+      description: row.description as string,
+      url: row.url as string,
+    }));
   } catch (e) {
-    if (e instanceof Error && (e.message.includes('no such table: apps') || e.message.includes('Unexpected status code while fetching migration jobs: 400'))) {
-       console.log("Table 'apps' not found or connection error. Attempting to create it.");
-      try {
-        await turso.execute(`
-          CREATE TABLE apps (
-            id TEXT PRIMARY KEY,
-            name TEXT NOT NULL,
-            description TEXT NOT NULL,
-            url TEXT NOT NULL
-          );
-        `);
-        console.log("Table 'apps' created successfully.");
-        return [];
-      } catch (createError) {
-        console.error("Failed to create 'apps' table:", createError);
-        return [];
-      }
-    }
-    console.error("Database Error: Failed to fetch apps. This might be due to connection issues, invalid credentials, or the 'apps' table not existing. Returning an empty list to prevent a crash.", e);
+    console.error("Database Error: Failed to fetch apps.", e);
+    // Return an empty array to prevent the app from crashing.
     return [];
   }
 }
@@ -41,7 +31,13 @@ export async function getAppById(id: string): Promise<App | undefined> {
     if (rs.rows.length === 0) {
       return undefined;
     }
-    return rs.rows[0] as App;
+    const row = rs.rows[0];
+    return {
+        id: row.id as string,
+        name: row.name as string,
+        description: row.description as string,
+        url: row.url as string,
+    };
   } catch (e) {
      console.error(`Database Error: Failed to fetch app with id '${id}'.`, e);
     // Return undefined to allow the page to render a 'Not Found' state.
