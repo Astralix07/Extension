@@ -45,7 +45,9 @@ export async function saveApp(prevState: any, formData: FormData) {
   revalidatePath('/admin');
   revalidatePath('/');
   revalidatePath('/apps');
-  redirect('/admin');
+
+  const message = id ? 'App updated successfully.' : 'App created successfully.';
+  return { success: true, message };
 }
 
 export async function deleteAppAction(id: string) {

@@ -2,6 +2,7 @@
 
 import { useFormState } from 'react-dom';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { App } from '@/lib/types';
 import { saveApp, generateDescriptionAction } from '@/lib/actions';
 import { Button } from '@/components/ui/button';
@@ -15,22 +16,23 @@ import { SubmitButton } from '@/components/submit-button';
 
 export function AppForm({ app }: { app?: App }) {
   const { toast } = useToast();
+  const router = useRouter();
   const [description, setDescription] = useState(app?.description || '');
   const [isGenerating, setIsGenerating] = useState(false);
-  const initialState = { message: null, errors: {} };
+  const initialState = { message: null, errors: {}, success: false };
   const [state, dispatch] = useFormState(saveApp, initialState);
 
   const [appName, setAppName] = useState(app?.name || '');
   const [appUrl, setAppUrl] = useState(app?.websiteUrl || '');
 
   useEffect(() => {
-    if (state.message) {
-      if(Object.keys(state.errors ?? {}).length > 0) {
-        toast({ title: 'Error', description: state.message, variant: 'destructive' });
-      } 
-      // Successful save will redirect, so no toast needed here.
+    if (state.success) {
+      toast({ title: 'Success', description: state.message });
+      router.push('/admin');
+    } else if (state.message) {
+      toast({ title: 'Error', description: state.message, variant: 'destructive' });
     }
-  }, [state, toast]);
+  }, [state, toast, router]);
 
   const handleGenerateDescription = async () => {
     if (!appName) {
