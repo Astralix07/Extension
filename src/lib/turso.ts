@@ -1,3 +1,4 @@
+'use server';
 import { createClient } from '@libsql/client';
 
 if (!process.env.TURSO_DATABASE_URL) {
