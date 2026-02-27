@@ -1,4 +1,3 @@
-'use server';
 import { createClient } from '@libsql/client';
 
 if (!process.env.TURSO_DATABASE_URL) {
@@ -6,13 +5,7 @@ if (!process.env.TURSO_DATABASE_URL) {
 }
 
 if (!process.env.TURSO_AUTH_TOKEN) {
-  // Auth token is optional for local development, but required for production.
-  // We'll log a warning if it's not present.
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('TURSO_AUTH_TOKEN is not defined in .env file for production');
-  } else {
-    console.warn('TURSO_AUTH_TOKEN is not defined. This is okay for local development, but required for production.');
-  }
+  throw new Error('TURSO_AUTH_TOKEN is not defined in .env file. Please ensure it is set.');
 }
 
 export const turso = createClient({
