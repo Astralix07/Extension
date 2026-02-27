@@ -99,7 +99,7 @@ export function AppForm({ app }: { app?: App }) {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="imageUrl">Image URL</Label>
-                    <Input id="imageUrl" name="imageUrl" type="url" defaultValue={app?.imageUrl ?? 'https://picsum.photos/seed/new-app/600/400'} placeholder="https://picsum.photos/seed/..." required/>
+                    <Input id="imageUrl" name="imageUrl" type="url" defaultValue={app?.imageUrl ?? ''} placeholder="https://..." required/>
                     {state.errors?.imageUrl && <p className="text-sm text-destructive mt-1">{state.errors.imageUrl.join(', ')}</p>}
                 </div>
             </div>
