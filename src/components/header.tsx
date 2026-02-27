@@ -5,8 +5,9 @@ import { Menu, LogOut } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { logout } from '@/lib/actions';
 
-export function Header() {
-  const session = cookies().get('session')?.value;
+export async function Header() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get('session')?.value;
   const isLoggedIn = session === 'admin-logged-in';
 
   return (
