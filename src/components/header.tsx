@@ -6,38 +6,29 @@ import { Menu } from 'lucide-react';
 export function Header() {
   return (
     <header className="sticky top-6 z-50 flex justify-center w-full">
-      <div className="w-full max-w-2xl flex h-14 items-center px-4" style={{ backgroundColor: '#BA55D3' }}>
-        <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span className="hidden font-bold sm:inline-block" style={{ color: 'red' }}>
-              KNULL
-            </span>
-          </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link
-              href="/"
-              className="transition-colors hover:text-white text-gray-200"
-            >
-              Home
-            </Link>
-            <Link
-              href="/admin"
-              className="transition-colors hover:text-white text-gray-200"
-            >
-              Admin
-            </Link>
-          </nav>
-        </div>
+      <div className="w-full max-w-2xl flex h-14 items-center justify-between px-4" style={{ backgroundColor: '#BA55D3' }}>
+        <Link href="/" className="flex items-center space-x-2">
+          <span className="font-bold" style={{ color: 'red' }}>
+            KNULL
+          </span>
+        </Link>
         
-        <div className="flex flex-1 items-center justify-between space-x-2 md:hidden">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="font-bold" style={{ color: 'red' }}>
-                KNULL
-              </span>
-            </Link>
-        </div>
+        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+          <Link
+            href="/"
+            className="transition-colors hover:text-white text-gray-200"
+          >
+            Home
+          </Link>
+          <Link
+            href="/admin"
+            className="transition-colors hover:text-white text-gray-200"
+          >
+            Admin
+          </Link>
+        </nav>
 
-        <div className="flex flex-1 items-center justify-end md:hidden">
+        <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 hover:text-white focus-visible:bg-white/20">
