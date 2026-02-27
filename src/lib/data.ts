@@ -62,12 +62,6 @@ export async function getAppById(id: string): Promise<App | undefined> {
   return apps.find(app => app.id === id);
 }
 
-export async function getCategories(): Promise<string[]> {
-  await delay(50);
-  const categories = new Set(apps.map(app => app.category));
-  return Array.from(categories);
-}
-
 export async function addApp(appData: Omit<App, 'id'>): Promise<App> {
   await delay(200);
   const newApp: App = {

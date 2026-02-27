@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import type { App } from '@/lib/types';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -11,22 +10,17 @@ import { Badge } from '@/components/ui/badge';
 
 interface AppListProps {
   initialApps: App[];
-  categories: string[];
 }
 
-export function AppList({ initialApps, categories }: AppListProps) {
+export function AppList({ initialApps }: AppListProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
 
   const filteredApps = useMemo(() => {
     return initialApps
       .filter(app =>
         app.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .filter(app =>
-        selectedCategory === 'all' ? true : app.category === selectedCategory
       );
-  }, [initialApps, searchTerm, selectedCategory]);
+  }, [initialApps, searchTerm]);
 
   return (
     <div className="space-y-6">
@@ -41,19 +35,6 @@ export function AppList({ initialApps, categories }: AppListProps) {
             className="pl-10"
           />
         </div>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-full md:w-[200px]">
-            <SelectValue placeholder="Filter by category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.map(category => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
       
       {filteredApps.length > 0 ? (
@@ -86,7 +67,7 @@ export function AppList({ initialApps, categories }: AppListProps) {
       ) : (
         <div className="text-center py-16">
           <p className="text-lg text-muted-foreground">No applications found.</p>
-          <p className="text-sm text-muted-foreground/80">Try adjusting your search or filters.</p>
+          <p className="text-sm text-muted-foreground/80">Try adjusting your search.</p>
         </div>
       )}
     </div>
