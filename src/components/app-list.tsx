@@ -4,8 +4,10 @@ import { useState, useMemo } from 'react';
 import type { App } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { AppCard } from './app-card';
-import { Search } from 'lucide-react';
+import { Search, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 interface AppListProps {
   initialApps: App[];
@@ -55,10 +57,31 @@ export function AppList({ initialApps, categories }: AppListProps) {
       </div>
       
       {filteredApps.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredApps.map(app => (
-            <AppCard key={app.id} app={app} />
-          ))}
+        <div className="border rounded-lg">
+          <ul className="divide-y divide-border">
+            {filteredApps.map(app => (
+              <li key={app.id} className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex-grow">
+                  <Link href={`/apps/${app.id}`} className="hover:underline">
+                    <h3 className="text-lg font-semibold font-headline">{app.name}</h3>
+                  </Link>
+                  <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{app.description}</p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Badge variant="secondary">{app.category}</Badge>
+                    <Badge variant="outline">v{app.version}</Badge>
+                  </div>
+                </div>
+                <div className="flex-shrink-0 w-full sm:w-auto">
+                  <Button asChild className="w-full sm:w-auto">
+                    <a href={app.downloadUrl} target="_blank" rel="noopener noreferrer">
+                      <Download className="mr-2 h-4 w-4" />
+                      Download
+                    </a>
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : (
         <div className="text-center py-16">

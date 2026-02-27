@@ -22,13 +22,6 @@ export function AppCard({ app }: AppCardProps) {
     <Card className="flex flex-col overflow-hidden transition-transform duration-300 ease-in-out hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20">
       <CardHeader>
         <div className="aspect-[3/2] relative mb-4">
-          <Image
-            src={app.imageUrl}
-            alt={`Screenshot of ${app.name}`}
-            fill
-            className="object-cover rounded-t-lg"
-            data-ai-hint={app.imageHint}
-          />
         </div>
         <CardTitle className="text-xl font-headline">{app.name}</CardTitle>
         <CardDescription className="line-clamp-3 h-[60px]">
