@@ -97,3 +97,18 @@ export async function deleteApp(id: string): Promise<boolean> {
     return false;
   }
 }
+
+
+export async function getAdminPassword(): Promise<string | undefined> {
+  try {
+    const rs = await turso.execute("SELECT password FROM admin WHERE id = 1");
+    if (rs.rows.length === 0) {
+      return undefined;
+    }
+    const row = rs.rows[0];
+    return row.password as string;
+  } catch (e) {
+    console.error(`Database Error: Failed to fetch admin password.`, e);
+    return undefined;
+  }
+}
