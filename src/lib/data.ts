@@ -6,19 +6,35 @@ import { randomUUID } from 'crypto';
 
 export async function getApps(): Promise<App[]> {
   try {
-    // The `rows` property will be an array of objects, matching the App type.
     const rs = await turso.execute("SELECT * FROM apps ORDER BY name COLLATE NOCASE");
     return rs.rows as App[];
   } catch (e) {
-    if (e instanceof Error && e.message.includes('no such table: apps')) {
-      console.log("Table 'apps' not found. Returning empty array. Please create it and seed it if you want initial data.");
-      return [];
+    if (e instanceof Error && (e.message.includes('no such table: apps') || e.message.includes('400'))) {
+      try {
+        console.log("Table 'apps' not found or connection error. Attempting to create it.");
+        await turso.execute(`
+          CREATE TABLE IF NOT EXISTS apps (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT NOT NULL,
+            category TEXT NOT NULL,
+            version TEXT NOT NULL,
+            downloadUrl TEXT NOT NULL,
+            websiteUrl TEXT,
+            imageUrl TEXT NOT NULL,
+            imageHint TEXT NOT NULL
+          );
+        `);
+        console.log("Table 'apps' created successfully. It is currently empty.");
+        return []; // Return empty array as the table has just been created.
+      } catch (creationError) {
+        console.error("Failed to create 'apps' table:", creationError);
+        // Don't throw, just return empty to avoid crashing the page.
+        return [];
+      }
     }
     console.error(e);
-    // Don't throw the error on build time
-    if (process.env.NODE_ENV === 'development') {
-        throw e;
-    }
+    // Don't throw, just return empty to avoid crashing the page.
     return [];
   }
 }
@@ -34,7 +50,8 @@ export async function getAppById(id: string): Promise<App | undefined> {
     }
     return rs.rows[0] as App;
   } catch (e) {
-    if (e instanceof Error && e.message.includes('no such table: apps')) {
+    if (e instanceof Error && (e.message.includes('no such table: apps') || e.message.includes('400'))) {
+      console.log("Could not get app by ID, table might not exist yet.");
       return undefined;
     }
     console.error(e);
