@@ -24,7 +24,6 @@ import {
 import { Pen, Trash2 } from 'lucide-react';
 import { deleteAppAction } from '@/lib/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '../ui/badge';
 import { useTransition } from 'react';
 
 interface AppsTableProps {
@@ -59,8 +58,7 @@ export function AppsTable({ apps }: AppsTableProps) {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead className="hidden md:table-cell">Category</TableHead>
-            <TableHead className="hidden sm:table-cell">Version</TableHead>
+            <TableHead>URL</TableHead>
             <TableHead>
               <span className="sr-only">Actions</span>
             </TableHead>
@@ -70,8 +68,7 @@ export function AppsTable({ apps }: AppsTableProps) {
           {apps.map(app => (
             <TableRow key={app.id}>
               <TableCell className="font-medium">{app.name}</TableCell>
-              <TableCell className="hidden md:table-cell"><Badge variant="outline">{app.category}</Badge></TableCell>
-              <TableCell className="hidden sm:table-cell">{app.version}</TableCell>
+              <TableCell>{app.url}</TableCell>
               <TableCell>
                 <div className="flex justify-end gap-2">
                   <Button asChild variant="ghost" size="icon">

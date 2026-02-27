@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Search, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 
 interface AppListProps {
   initialApps: App[];
@@ -47,14 +46,10 @@ export function AppList({ initialApps }: AppListProps) {
                     <h3 className="text-lg font-semibold font-headline">{app.name}</h3>
                   </Link>
                   <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{app.description}</p>
-                  <div className="flex items-center space-x-2 mt-2">
-                    <Badge variant="secondary">{app.category}</Badge>
-                    <Badge variant="outline">v{app.version}</Badge>
-                  </div>
                 </div>
                 <div className="flex-shrink-0 w-full sm:w-auto">
                   <Button asChild className="w-full sm:w-auto">
-                    <a href={app.downloadUrl} target="_blank" rel="noopener noreferrer">
+                    <a href={app.url} target="_blank" rel="noopener noreferrer">
                       <Download className="mr-2 h-4 w-4" />
                       Download
                     </a>

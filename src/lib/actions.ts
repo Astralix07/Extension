@@ -2,20 +2,13 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { addApp, updateApp, deleteApp } from '@/lib/data';
-import { generateAppDescription } from '@/ai/flows/generate-app-description';
 
 const AppSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Name is required'),
   description: z.string().min(1, 'Description is required'),
-  category: z.string().min(1, 'Category is required'),
-  version: z.string().min(1, 'Version is required'),
-  downloadUrl: z.string().url('Must be a valid URL'),
-  websiteUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  imageUrl: z.string().url('Must be a valid URL'),
-  imageHint: z.string().default(''),
+  url: z.string().url('Must be a valid URL'),
 });
 
 export async function saveApp(prevState: any, formData: FormData) {
@@ -60,18 +53,4 @@ export async function deleteAppAction(id: string) {
     } catch (error) {
         return { message: 'Database Error: Failed to delete app.' };
     }
-}
-
-export async function generateDescriptionAction(appName: string, appUrl?: string) {
-  if (!appName) {
-    return { error: 'App name is required to generate a description.' };
-  }
-  
-  try {
-    const result = await generateAppDescription({ appName, appUrl: appUrl || undefined });
-    return { description: result.description };
-  } catch (error) {
-    console.error('AI Error:', error);
-    return { error: 'Failed to generate description due to an internal error.' };
-  }
 }

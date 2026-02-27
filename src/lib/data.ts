@@ -9,6 +9,24 @@ export async function getApps(): Promise<App[]> {
     const rs = await turso.execute("SELECT * FROM apps ORDER BY name COLLATE NOCASE");
     return rs.rows as App[];
   } catch (e) {
+    if (e instanceof Error && (e.message.includes('no such table: apps') || e.message.includes('Unexpected status code while fetching migration jobs: 400'))) {
+       console.log("Table 'apps' not found or connection error. Attempting to create it.");
+      try {
+        await turso.execute(`
+          CREATE TABLE apps (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            description TEXT NOT NULL,
+            url TEXT NOT NULL
+          );
+        `);
+        console.log("Table 'apps' created successfully.");
+        return [];
+      } catch (createError) {
+        console.error("Failed to create 'apps' table:", createError);
+        return [];
+      }
+    }
     console.error("Database Error: Failed to fetch apps. This might be due to connection issues, invalid credentials, or the 'apps' table not existing. Returning an empty list to prevent a crash.", e);
     return [];
   }
@@ -35,12 +53,11 @@ export async function addApp(appData: Omit<App, 'id'>): Promise<App> {
   const newApp: App = {
     id: randomUUID(),
     ...appData,
-    websiteUrl: appData.websiteUrl || '', // Ensure websiteUrl is not undefined
   };
   try {
     await turso.execute({
-      sql: "INSERT INTO apps (id, name, description, category, version, downloadUrl, websiteUrl, imageUrl, imageHint) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      args: [newApp.id, newApp.name, newApp.description, newApp.category, newApp.version, newApp.downloadUrl, newApp.websiteUrl, newApp.imageUrl, newApp.imageHint],
+      sql: "INSERT INTO apps (id, name, description, url) VALUES (?, ?, ?, ?)",
+      args: [newApp.id, newApp.name, newApp.description, newApp.url],
     });
   } catch(e) {
     console.error("Database Error: Failed to add app.", e);
@@ -52,16 +69,11 @@ export async function addApp(appData: Omit<App, 'id'>): Promise<App> {
 export async function updateApp(id: string, appData: Omit<App, 'id'>): Promise<App | undefined> {
   try {
     const result = await turso.execute({
-      sql: "UPDATE apps SET name = ?, description = ?, category = ?, version = ?, downloadUrl = ?, websiteUrl = ?, imageUrl = ?, imageHint = ? WHERE id = ?",
+      sql: "UPDATE apps SET name = ?, description = ?, url = ? WHERE id = ?",
       args: [
         appData.name,
         appData.description,
-        appData.category,
-        appData.version,
-        appData.downloadUrl,
-        appData.websiteUrl || '',
-        appData.imageUrl,
-        appData.imageHint,
+        appData.url,
         id,
       ],
     });
@@ -74,7 +86,7 @@ export async function updateApp(id: string, appData: Omit<App, 'id'>): Promise<A
     throw new Error('Database Error: Failed to update app.');
   }
 
-  return { id, ...appData, websiteUrl: appData.websiteUrl || '' };
+  return { id, ...appData };
 }
 
 export async function deleteApp(id: string): Promise<boolean> {
