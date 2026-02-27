@@ -2,6 +2,9 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Header } from '@/components/header';
 import { Toaster } from "@/components/ui/toaster";
+import { LoadingScreen } from '@/components/loading-screen';
+import { PageProgressBar } from '@/components/page-progress-bar';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'SynthVault',
@@ -21,7 +24,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased min-h-screen flex flex-col bg-background">
+      <body className="font-body antialiased min-h-screen flex flex-col bg-background overflow-x-hidden">
+        <LoadingScreen />
+        <Suspense fallback={null}>
+          <PageProgressBar />
+        </Suspense>
         <Header />
         <main className="flex-1 container mx-auto px-4 pt-28 pb-8">
           {children}
